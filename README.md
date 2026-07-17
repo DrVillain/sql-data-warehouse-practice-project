@@ -27,19 +27,18 @@ This project simulates a real-world data warehouse build using the **Medallion A
 
 The warehouse follows the **Medallion Architecture**, with each layer serving a distinct purpose:
 
-```
-┌─────────────┐      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
-│   Sources   │  →   │   Bronze    │  →   │   Silver    │  →   │    Gold     │
-│  (Raw CRM   │      │  Raw, as-   │      │  Cleansed,  │      │  Business-  │
-│  & ERP data)│      │  is data    │      │  standardized│      │  ready star │
-│             │      │             │      │  data       │      │  schema     │
-└─────────────┘      └─────────────┘      └─────────────┘      └─────────────┘
-                                                                        │
-                                                                        ▼
-                                                                  ┌───────────┐
-                                                                  │ Analysis &│
-                                                                  │ Reporting │
-                                                                  └───────────┘
+```mermaid
+flowchart LR
+    A["📥 Sources<br/>CRM & ERP data"] --> B["🥉 Bronze<br/>Raw, as-is data"]
+    B --> C["🥈 Silver<br/>Cleansed & standardized"]
+    C --> D["🥇 Gold<br/>Business-ready star schema"]
+    D --> E["📊 Analysis &<br/>Reporting"]
+
+    style A fill:#2b2b2b,stroke:#888,color:#fff
+    style B fill:#8c5a2b,stroke:#cd7f32,color:#fff
+    style C fill:#8a8a8a,stroke:#c0c0c0,color:#fff
+    style D fill:#a8892c,stroke:#ffd700,color:#fff
+    style E fill:#2b2b2b,stroke:#888,color:#fff
 ```
 
 | Layer | Purpose |
@@ -50,15 +49,40 @@ The warehouse follows the **Medallion Architecture**, with each layer serving a 
 
 ### Gold Layer — Star Schema
 
-```
-              ┌───────────────────┐
-              │  gold.dim_customers│
-              └─────────┬──────────┘
-                         │
-                         ▼
-┌────────────────┐   ┌──────────────────┐
-│ gold.dim_products├──►│  gold.fact_sales  │
-└────────────────┘   └──────────────────┘
+```mermaid
+erDiagram
+    dim_customers ||--o{ fact_sales : "customer_key"
+    dim_products ||--o{ fact_sales : "product_key"
+
+    dim_customers {
+        int customer_key PK
+        int customer_id
+        string customer_number
+        string first_name
+        string last_name
+        string country
+        string gender
+    }
+
+    dim_products {
+        int product_key PK
+        int product_id
+        string product_number
+        string product_name
+        string category
+        string subcategory
+        int cost
+    }
+
+    fact_sales {
+        string order_number
+        int product_key FK
+        int customer_key FK
+        date order_date
+        int sales_amount
+        int quantity
+        int price
+    }
 ```
 
 ## 🛠️ Tech Stack
