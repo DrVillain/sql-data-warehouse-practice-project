@@ -61,7 +61,10 @@ erDiagram
         string first_name
         string last_name
         string country
+        string marital_status
         string gender
+        string birthdate
+        date create_date
     }
 
     dim_products {
@@ -69,9 +72,13 @@ erDiagram
         int product_id
         string product_number
         string product_name
+        string category_id
         string category
         string subcategory
+        string maintenance
         int cost
+        string product_line
+        date start_date
     }
 
     fact_sales {
@@ -79,6 +86,8 @@ erDiagram
         int product_key FK
         int customer_key FK
         date order_date
+        date shipping_date
+        date due_date
         int sales_amount
         int quantity
         int price
